@@ -4,6 +4,9 @@ import com.binance.client.constant.BinanceApiConstants;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class Candlestick {
 
@@ -30,6 +33,10 @@ public class Candlestick {
     private BigDecimal takerBuyQuoteAssetVolume;
 
     private BigDecimal ignore;
+
+    private LocalDateTime openLocalDateTime;
+
+    private LocalDateTime closeLocalDateTime;
 
     public Long getOpenTime() {
         return openTime;
@@ -125,6 +132,28 @@ public class Candlestick {
 
     public void setIgnore(BigDecimal ignore) {
         this.ignore = ignore;
+    }
+
+    public LocalDateTime getOpenLocalDateTime() {
+        return openLocalDateTime;
+    }
+
+    public void setOpenLocalDateTime(LocalDateTime openLocalDateTime) {
+        this.openLocalDateTime = openLocalDateTime;
+    }
+
+    public LocalDateTime getCloseLocalDateTime() {
+        return closeLocalDateTime;
+    }
+
+    public void setCloseLocalDateTime(LocalDateTime closeLocalDateTime) {
+        this.closeLocalDateTime = closeLocalDateTime;
+    }
+
+    public void convertTime() {
+        final ZoneId zone = ZoneId.of("Europe/Moscow");
+        this.openLocalDateTime = Instant.ofEpochMilli(openTime).atZone(zone).toLocalDateTime();
+        this.closeLocalDateTime = Instant.ofEpochMilli(closeTime).atZone(zone).toLocalDateTime();
     }
 
     @Override

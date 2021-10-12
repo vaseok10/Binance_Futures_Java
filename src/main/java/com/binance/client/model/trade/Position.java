@@ -29,6 +29,8 @@ public class Position {
 
     private String positionSide;
 
+    private BigDecimal positionAmt;
+
     public Boolean getIsolated() {
         return isolated;
     }
@@ -115,6 +117,14 @@ public class Position {
 
     public void setPositionSide(String positionSide) {
         this.positionSide = positionSide;
+    }
+
+    public BigDecimal getPositionAmt() {
+        return positionAmt;
+    }
+
+    public void setPositionAmt(BigDecimal positionAmt) {
+        this.positionAmt = positionAmt;
     }
 
     @Override

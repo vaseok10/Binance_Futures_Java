@@ -3,11 +3,15 @@ package com.binance.client.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.binance.client.SyncRequestClient;
 import com.binance.client.model.ResponseResult;
+import com.binance.client.model.trade.Order;
 import com.binance.client.model.market.*;
 import com.binance.client.model.enums.*;
 import com.binance.client.model.trade.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import static java.lang.String.valueOf;
 
 public class SyncRequestImpl implements SyncRequestClient {
 
@@ -17,64 +21,64 @@ public class SyncRequestImpl implements SyncRequestClient {
         this.requestImpl = requestImpl;
     }
 
-    
+
     @Override
     public ExchangeInformation getExchangeInformation() {
         return RestApiInvoker.callSync(requestImpl.getExchangeInformation());
     }
-    
+
     @Override
     public OrderBook getOrderBook(String symbol, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getOrderBook(symbol, limit));
     }
-    
+
     @Override
     public List<Trade> getRecentTrades(String symbol, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getRecentTrades(symbol, limit));
     }
-    
+
     @Override
     public List<Trade> getOldTrades(String symbol, Integer limit, Long fromId) {
         return RestApiInvoker.callSync(requestImpl.getOldTrades(symbol, limit, fromId));
     }
-    
+
     @Override
-    public List<AggregateTrade> getAggregateTrades(String symbol, Long fromId, Long startTime, 
-            Long endTime, Integer limit) {
+    public List<AggregateTrade> getAggregateTrades(String symbol, Long fromId, Long startTime,
+                                                   Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getAggregateTrades(symbol, fromId, startTime, endTime, limit));
     }
-    
+
     @Override
-    public List<Candlestick> getCandlestick(String symbol, CandlestickInterval interval, Long startTime, 
-            Long endTime, Integer limit) {
+    public List<Candlestick> getCandlestick(String symbol, CandlestickInterval interval, Long startTime,
+                                            Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getCandlestick(symbol, interval, startTime, endTime, limit));
     }
-    
+
     @Override
     public List<MarkPrice> getMarkPrice(String symbol) {
         return RestApiInvoker.callSync(requestImpl.getMarkPrice(symbol));
     }
-    
+
     @Override
     public List<FundingRate> getFundingRate(String symbol, Long startTime, Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getFundingRate(symbol, startTime, endTime, limit));
     }
-    
+
     @Override
     public List<PriceChangeTicker> get24hrTickerPriceChange(String symbol) {
         return RestApiInvoker.callSync(requestImpl.get24hrTickerPriceChange(symbol));
     }
-    
+
     @Override
     public List<SymbolPrice> getSymbolPriceTicker(String symbol) {
         return RestApiInvoker.callSync(requestImpl.getSymbolPriceTicker(symbol));
     }
-    
+
     @Override
     public List<SymbolOrderBook> getSymbolOrderBookTicker(String symbol) {
         return RestApiInvoker.callSync(requestImpl.getSymbolOrderBookTicker(symbol));
     }
-    
+
     @Override
     public List<LiquidationOrder> getLiquidationOrders(String symbol, Long startTime, Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getLiquidationOrders(symbol, startTime, endTime, limit));
@@ -84,16 +88,44 @@ public class SyncRequestImpl implements SyncRequestClient {
     public List<Object> postBatchOrders(String batchOrders) {
         return RestApiInvoker.callSync(requestImpl.postBatchOrders(batchOrders));
     }
-    
+
     @Override
     public Order postOrder(String symbol, OrderSide side, PositionSide positionSide, OrderType orderType,
-            TimeInForce timeInForce, String quantity, String price, String reduceOnly,
-            String newClientOrderId, String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType) {
+                           TimeInForce timeInForce, String quantity, String price, String reduceOnly,
+                           String newClientOrderId, String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType) {
         return RestApiInvoker.callSync(requestImpl.postOrder(symbol, side, positionSide, orderType,
-                timeInForce, quantity, price, reduceOnly, 
+                timeInForce, quantity, price, reduceOnly,
                 newClientOrderId, stopPrice, workingType,newOrderRespType));
     }
-    
+
+    @Override
+    public Order postMarketOrder(String symbol, BigDecimal quantity, OrderSide orderSide, String reduceOnly) {
+        quantity = quantity.signum() < 0 ? quantity.negate() : quantity;
+        return RestApiInvoker.callSync(requestImpl.postIsolatedMarketOrder(symbol, orderSide, PositionSide.BOTH, OrderType.MARKET,
+                valueOf(quantity), null, WorkingType.MARK_PRICE, reduceOnly));
+    }
+
+    @Override
+    public Order postStopMarketOrder(String symbol, BigDecimal quantity, BigDecimal stopPrice, OrderSide orderSide, String reduceOnly) {
+        quantity = quantity.signum() < 0 ? quantity.negate() : quantity;
+        return RestApiInvoker.callSync(requestImpl.postIsolatedMarketOrder(symbol, orderSide, PositionSide.BOTH, OrderType.STOP_MARKET,
+                valueOf(quantity), valueOf(stopPrice), WorkingType.CONTRACT_PRICE, reduceOnly));
+    }
+
+    @Override
+    public Order postLimitOrder(String symbol, BigDecimal quantity, BigDecimal price, OrderSide orderSide) {
+        quantity = quantity.signum() < 0 ? quantity.negate() : quantity;
+        //boolean reduceOnly = quantity.multiply(price).compareTo(BigDecimal.valueOf(5)) < 0;
+        return RestApiInvoker.callSync(requestImpl.postIsolatedMarketOrder(symbol, orderSide, PositionSide.BOTH, OrderType.LIMIT, valueOf(quantity),  valueOf(price), TimeInForce.GTC, true));
+    }
+
+    @Override
+    public Order placeTrailingStopOrder(String symbol, BigDecimal quantity, BigDecimal price, OrderSide orderSide, Integer callbackRate) {
+        quantity = quantity.signum() < 0 ? quantity.negate() : quantity;
+        //boolean reduceOnly = quantity.multiply(price).compareTo(BigDecimal.valueOf(5)) < 0;
+        return RestApiInvoker.callSync(requestImpl.postTrailingStopOrder(symbol, orderSide, valueOf(quantity),  valueOf(price), callbackRate));
+    }
+
     @Override
     public Order cancelOrder(String symbol, Long orderId, String origClientOrderId) {
         return RestApiInvoker.callSync(requestImpl.cancelOrder(symbol, orderId, origClientOrderId));
@@ -101,7 +133,7 @@ public class SyncRequestImpl implements SyncRequestClient {
 
     @Override
     public ResponseResult cancelAllOpenOrder(String symbol) {
-      return RestApiInvoker.callSync(requestImpl.cancelAllOpenOrder(symbol));
+        return RestApiInvoker.callSync(requestImpl.cancelAllOpenOrder(symbol));
     }
 
     @Override
@@ -139,57 +171,57 @@ public class SyncRequestImpl implements SyncRequestClient {
     public Order getOrder(String symbol, Long orderId, String origClientOrderId) {
         return RestApiInvoker.callSync(requestImpl.getOrder(symbol, orderId, origClientOrderId));
     }
-    
+
     @Override
     public List<Order> getOpenOrders(String symbol) {
         return RestApiInvoker.callSync(requestImpl.getOpenOrders(symbol));
     }
-    
+
     @Override
     public List<Order> getAllOrders(String symbol, Long orderId, Long startTime, Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getAllOrders(symbol, orderId, startTime, endTime, limit));
     }
-    
+
     @Override
     public List<AccountBalance> getBalance() {
         return RestApiInvoker.callSync(requestImpl.getBalance());
     }
-    
+
     @Override
     public AccountInformation getAccountInformation() {
         return RestApiInvoker.callSync(requestImpl.getAccountInformation());
     }
-    
+
     @Override
     public Leverage changeInitialLeverage(String symbol, Integer leverage) {
         return RestApiInvoker.callSync(requestImpl.changeInitialLeverage(symbol, leverage));
     }
-    
+
     @Override
-    public List<PositionRisk> getPositionRisk() {
-        return RestApiInvoker.callSync(requestImpl.getPositionRisk());
+    public List<PositionRisk> getPositionRisk(String symbol) {
+        return RestApiInvoker.callSync(requestImpl.getPositionRisk(symbol));
     }
-    
+
     @Override
     public List<MyTrade> getAccountTrades(String symbol, Long startTime, Long endTime, Long fromId, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getAccountTrades(symbol, startTime, endTime, fromId, limit));
     }
-    
+
     @Override
     public List<Income> getIncomeHistory(String symbol, IncomeType incomeType, Long startTime, Long endTime, Integer limit) {
         return RestApiInvoker.callSync(requestImpl.getIncomeHistory(symbol, incomeType, startTime, endTime, limit));
     }
-    
+
     @Override
     public String startUserDataStream() {
         return RestApiInvoker.callSync(requestImpl.startUserDataStream());
     }
-    
+
     @Override
     public String keepUserDataStream(String listenKey) {
         return RestApiInvoker.callSync(requestImpl.keepUserDataStream(listenKey));
     }
-    
+
     @Override
     public String closeUserDataStream(String listenKey) {
         return RestApiInvoker.callSync(requestImpl.closeUserDataStream(listenKey));

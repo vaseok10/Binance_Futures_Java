@@ -3,10 +3,12 @@ package com.binance.client;
 import com.alibaba.fastjson.JSONObject;
 import com.binance.client.impl.BinanceApiInternalFactory;
 import com.binance.client.model.ResponseResult;
+import com.binance.client.model.trade.Order;
 import com.binance.client.model.market.*;
 import com.binance.client.model.enums.*;
 import com.binance.client.model.trade.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -145,15 +147,23 @@ public interface SyncRequestClient {
      * @return
      */
     List<Object> postBatchOrders(String batchOrders);
-    
+
     /**
      * Send in a new order.
      *
      * @return Order.
      */
     Order postOrder(String symbol, OrderSide side, PositionSide positionSide, OrderType orderType,
-            TimeInForce timeInForce, String quantity, String price, String reduceOnly,
-            String newClientOrderId, String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType);
+                    TimeInForce timeInForce, String quantity, String price, String reduceOnly,
+                    String newClientOrderId, String stopPrice, WorkingType workingType, NewOrderRespType newOrderRespType);
+
+    Order postMarketOrder(String symbol, BigDecimal quantity, OrderSide orderSide, String reduceOnly);
+
+    Order postStopMarketOrder(String symbol, BigDecimal quantity, BigDecimal stopPrice, OrderSide orderSide, String reduceOnly);
+
+    Order postLimitOrder(String symbol, BigDecimal quantity, BigDecimal price, OrderSide orderSide);
+
+    Order placeTrailingStopOrder(String symbol, BigDecimal quantity, BigDecimal price, OrderSide orderSide, Integer callbackRate);
 
     /**
      * Cancel an active order.
@@ -239,21 +249,21 @@ public interface SyncRequestClient {
      * @return All orders.
      */
     List<Order> getAllOrders(String symbol, Long orderId, Long startTime, Long endTime, Integer limit);
-  
+
     /**
      * Get account balances.
      *
      * @return Balances.
      */
     List<AccountBalance> getBalance();
-  
+
     /**
      * Get current account information.
      *
      * @return Current account information.
      */
     AccountInformation getAccountInformation();
-  
+
     /**
      * Change initial leverage.
      *
@@ -266,7 +276,7 @@ public interface SyncRequestClient {
      *
      * @return Position.
      */
-    List<PositionRisk> getPositionRisk();
+    List<PositionRisk> getPositionRisk(String symbol);
 
     /**
      * Get trades for a specific account and symbol.
@@ -327,14 +337,14 @@ public interface SyncRequestClient {
     /**
      * Long/Short Ratio (MARKET DATA)
      *
-     * @return global Long/Short Ratio. 
+     * @return global Long/Short Ratio.
      */
     List<CommonLongShortRatio> getGlobalAccountRatio(String symbol, PeriodType period, Long startTime, Long endTime, Integer limit);
 
     /**
      * Taker Long/Short Ratio (MARKET DATA)
      *
-     * @return Taker Long/Short Ratio. 
+     * @return Taker Long/Short Ratio.
      */
     List<TakerLongShortStat> getTakerLongShortRatio(String symbol, PeriodType period, Long startTime, Long endTime, Integer limit);
 
