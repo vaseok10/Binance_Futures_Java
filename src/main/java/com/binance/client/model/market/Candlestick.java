@@ -1,6 +1,9 @@
 package com.binance.client.model.market;
 
 import com.binance.client.constant.BinanceApiConstants;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
@@ -8,6 +11,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class Candlestick {
 
     private Long openTime;
@@ -38,116 +44,20 @@ public class Candlestick {
 
     private LocalDateTime closeLocalDateTime;
 
-    public Long getOpenTime() {
-        return openTime;
-    }
-
-    public void setOpenTime(Long openTime) {
-        this.openTime = openTime;
-    }
-
-    public BigDecimal getOpen() {
-        return open;
-    }
-
-    public void setOpen(BigDecimal open) {
-        this.open = open;
-    }
-
-    public BigDecimal getHigh() {
-        return high;
-    }
-
-    public void setHigh(BigDecimal high) {
-        this.high = high;
-    }
-
-    public BigDecimal getLow() {
-        return low;
-    }
-
-    public void setLow(BigDecimal low) {
-        this.low = low;
-    }
-
-    public BigDecimal getClose() {
-        return close;
-    }
-
-    public void setClose(BigDecimal close) {
-        this.close = close;
-    }
-
-    public BigDecimal getVolume() {
-        return volume;
-    }
-
-    public void setVolume(BigDecimal volume) {
-        this.volume = volume;
-    }
-
-    public Long getCloseTime() {
-        return closeTime;
-    }
-
-    public void setCloseTime(Long closeTime) {
-        this.closeTime = closeTime;
-    }
-
-    public BigDecimal getQuoteAssetVolume() {
-        return quoteAssetVolume;
-    }
-
-    public void setQuoteAssetVolume(BigDecimal quoteAssetVolume) {
-        this.quoteAssetVolume = quoteAssetVolume;
-    }
-
-    public Integer getNumTrades() {
-        return numTrades;
-    }
-
-    public void setNumTrades(Integer numTrades) {
-        this.numTrades = numTrades;
-    }
-
-    public BigDecimal getTakerBuyBaseAssetVolume() {
-        return takerBuyBaseAssetVolume;
-    }
-
-    public void setTakerBuyBaseAssetVolume(BigDecimal takerBuyBaseAssetVolume) {
-        this.takerBuyBaseAssetVolume = takerBuyBaseAssetVolume;
-    }
-
-    public BigDecimal getTakerBuyQuoteAssetVolume() {
-        return takerBuyQuoteAssetVolume;
-    }
-
-    public void setTakerBuyQuoteAssetVolume(BigDecimal takerBuyQuoteAssetVolume) {
-        this.takerBuyQuoteAssetVolume = takerBuyQuoteAssetVolume;
-    }
-
-    public BigDecimal getIgnore() {
-        return ignore;
-    }
-
-    public void setIgnore(BigDecimal ignore) {
-        this.ignore = ignore;
-    }
-
-    public LocalDateTime getOpenLocalDateTime() {
-        return openLocalDateTime;
-    }
-
-    public void setOpenLocalDateTime(LocalDateTime openLocalDateTime) {
-        this.openLocalDateTime = openLocalDateTime;
-    }
-
-    public LocalDateTime getCloseLocalDateTime() {
-        return closeLocalDateTime;
-    }
-
-    public void setCloseLocalDateTime(LocalDateTime closeLocalDateTime) {
-        this.closeLocalDateTime = closeLocalDateTime;
+    public Candlestick(String openTime, String open, String high, String low, String close, String volume, String closeTime, String quoteAssetVolume, String numTrades, String takerBuyBaseAssetVolume, String takerBuyQuoteAssetVolume, String ignore) {
+        final ZoneId zone = ZoneId.of("Europe/Moscow");
+        this.openLocalDateTime = Instant.ofEpochMilli(Long.parseLong(openTime)).atZone(zone).toLocalDateTime();
+        this.open = new BigDecimal(open);
+        this.high = new BigDecimal(high);
+        this.low = new BigDecimal(low);
+        this.close = new BigDecimal(close);
+        this.volume = new BigDecimal(volume);
+        this.closeLocalDateTime = Instant.ofEpochMilli(Long.parseLong(closeTime)).atZone(zone).toLocalDateTime();
+        this.quoteAssetVolume = new BigDecimal(quoteAssetVolume);
+        this.numTrades = Integer.parseInt(numTrades);
+        this.takerBuyBaseAssetVolume = new BigDecimal(takerBuyBaseAssetVolume);
+        this.takerBuyQuoteAssetVolume = new BigDecimal(takerBuyQuoteAssetVolume);
+        this.ignore = new BigDecimal(ignore);
     }
 
     public void convertTime() {
