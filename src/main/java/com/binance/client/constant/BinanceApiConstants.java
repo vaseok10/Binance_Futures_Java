@@ -47,4 +47,7 @@ public class BinanceApiConstants {
      * ToStringStyle.JSON_STYLE
      */
     public static ToStringStyle TO_STRING_BUILDER_STYLE = ToStringStyle.SHORT_PREFIX_STYLE;
+
+    public static final int INCREASE_MARGIN_TYPE = 1;
+    public static final int DECREASE_MARGIN_TYPE = 2;
 }

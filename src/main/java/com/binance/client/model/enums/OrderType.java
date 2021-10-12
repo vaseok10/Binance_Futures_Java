@@ -1,11 +1,13 @@
 package com.binance.client.model.enums;
 
 import com.binance.client.impl.utils.EnumLookup;
+import lombok.Getter;
 
 /**
  * buy-market, sell-market, buy-limit, buy-ioc, sell-ioc,
  * buy-limit-maker, sell-limit-maker, buy-stop-limit, sell-stop-limit.
  */
+@Getter
 public enum OrderType {
     LIMIT("LIMIT"),
     MARKET("MARKET"),
